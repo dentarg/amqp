@@ -40,7 +40,7 @@ resource = ConditionVariable.new
 puts "Waiting for booking request message"
 messages = []
 request_queue.subscribe do |msg|
-  puts "Received booking request: #{msg.inspect}"
+  puts "Received booking request: #{msg.body}"
   messages << msg.body
   msg.ack
   mutex.synchronize { resource.signal } # signal that we consumed the message
