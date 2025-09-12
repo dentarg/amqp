@@ -3,7 +3,7 @@ require "bundler/inline"
 # install and require these gems
 gemfile do
   source "https://rubygems.org"
-  gem "amqp-client", "1.1.7"
+  gem "amqp-client", "1.2.0"
   gem "json"
 end
 
