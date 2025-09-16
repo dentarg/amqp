@@ -54,7 +54,7 @@ channel = connection.create_channel
 taxi_queues = taxis.map do |taxi|
   queue_name = "#{group_name}_#{taxi.city}_#{taxi.car}"
   queue = channel.queue(queue_name, durable: true)
-  puts "Channel created: #{queue_name}"
+  puts "Queue created: #{queue_name}"
   queue
 end
 

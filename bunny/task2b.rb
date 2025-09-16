@@ -58,7 +58,7 @@ taxis.each do |taxi|
   queue = channel.queue(queue_name, durable: true)
 
   queue.bind(city_exchange, routing_key: taxi.city)
-  puts "Channel created: #{queue_name}"
+  puts "Queue created: #{queue_name}"
 end
 
 puts "Waiting for notifications"
