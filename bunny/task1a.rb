@@ -7,8 +7,6 @@ gemfile do
   gem "json"
 end
 
-group_name = "patrik"
-
 # 1a) Build your first microservice:
 # Develop a microservice that connects to LavinMQ, subscribes to "<group_name>_booking_requests" messages, extracts
 # the "from" city, computes route distance between the city and the destination, creates a new message with the
@@ -23,6 +21,7 @@ group_name = "patrik"
 # Output (<group_name>_bookings queue):
 # {"from": "vilnius", "to": "stockholm", "group_name": "your_group_name", "distance": "5000"}
 
+group_name = ARGV.first || "patrik"
 queue_name = "#{group_name}_booking_requests"
 
 opts = {

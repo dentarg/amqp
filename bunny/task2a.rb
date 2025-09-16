@@ -12,8 +12,6 @@ Signal.trap("INT") do
   exit
 end
 
-group_name = "patrik"
-
 # 2a) Information handler (fanout exchange):
 # Create an information-sharing app. Retrieve all taxi cars via API (https://workshop.lavinmq.com/taxis).
 # Create a queue per taxi (suggested naming pattern: "<group_name>_<city>_<taxi>") develop a microservice creating
@@ -25,6 +23,8 @@ group_name = "patrik"
 # {"city": "vilnius", "message": "free fika...", "status": "news", "group_name": "your_group_name"}
 # Output (fanout exchange "<group_name>_news"):
 # {"info": "free fika..."}
+
+group_name = ARGV.shift || "patrik"
 
 Taxi = Data.define(:city, :car)
 Notification = Struct.new(:payload) do

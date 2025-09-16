@@ -12,8 +12,6 @@ Signal.trap("INT") do
   exit
 end
 
-group_name = "patrik"
-
 # 2b) Share information (topic exchange):
 # Create a topic exchange, bind it to taxi queues using city-based bindings (for instance bind one taxi to the city
 #  (topic) vilnius and another to kaunas). Consume messages from "notifications"; if status is "alert", publish to
@@ -24,6 +22,8 @@ group_name = "patrik"
 # {"city": "vilnius", "message": "Find more customers...", "status": "alerts", "group_name": "your_group_name"}
 # Output (topic exchange "<group_name>_alerts", routing_key=<city-name>):
 # {"info": "Find more customers..."}
+
+group_name = ARGV.shift || "patrik"
 
 Taxi = Data.define(:city, :car)
 Notification = Struct.new(:payload) do
