@@ -16,7 +16,7 @@ end
 # the "from" city, computes route distance between the city and the destination, creates a new message with the
 # route distance, and publishes to the "bookings" queue. The distance computation does not need to be
 # realistic (random is fine!).
-#{ }"vilnius" and "kaunas" are the supported "from" cities.
+# { }"vilnius" and "kaunas" are the supported "from" cities.
 #
 # Use the button "Book Taxi" to generate the input message.
 #
@@ -31,7 +31,7 @@ consume_timeout = Integer(ARGV.shift || 15)
 
 opts = {
   verify_peer: true,
-  tls_silence_warnings: true, # silence "Using TLS but no client certificate is provided"
+  tls_silence_warnings: true # silence "Using TLS but no client certificate is provided"
 }
 amqp_url = ENV.fetch("AMQP_URL")
 connection = Bunny.new(amqp_url, opts)

@@ -1,0 +1,31 @@
+plugins:
+  - "rubocop-md"
+
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+
+AllCops:
+  Include:
+    - "**/*.rb"     # Include all Ruby files
+    - "**/*.rake"   # Include all Rake files
+    - "**/*.md"     # Include all Markdown files for rubocop-md
+    - "Gemfile"     # Specifically include Gemfile
+  Exclude:
+    - "bin/*"
+    - "config/initializers/*"
+    - "db/schema.rb"
+    - "db/migrate/*"
+    - "node_modules/**/*"
+    - "vendor/**/*"
+
+Markdown:
+  # Whether to run RuboCop against non-valid snippets
+  WarnInvalid: false
+  # Whether to lint codeblocks without code attributes
+  Autodetect: false
