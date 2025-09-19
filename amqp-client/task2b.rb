@@ -3,9 +3,9 @@ require "bundler/inline"
 # install and require these gems
 gemfile do
   source "https://rubygems.org"
-  gem "bunny", "2.24.0"
-  gem "json"
+  gem "amqp-client", "1.2.1"
   gem "excon"
+  gem "json"
 end
 
 Signal.trap("INT") do
@@ -18,10 +18,13 @@ end
 # the topic exchange using the city as the routing key.
 # Verify in the management UI that the correct queue received the message.
 
-# Input ("notifications" queue):
+# Input ("<group_name>_notifications" queue):
 # {"city": "vilnius", "message": "Find more customers...", "status": "alert", "group_name": "your_group_name"}
-# Output (topic exchange "alerts", routing_key=<city-name>):
+# Output (topic exchange "<group_name>_alerts", routing_key=<city-name>):
 # {"info": "Find more customers..."}
+
+group_name = ARGV.first || "patrik"
+consume_timeout = Integer(ARGV.first || 15)
 
 Taxi = Data.define(:city, :car)
 Notification = Struct.new(:payload) do
@@ -38,35 +41,32 @@ api_url = ENV.fetch("TAXIS_API_URL", "https://workshop.lavinmq.com/taxis")
 api_data = Excon.get(api_url).body
 taxis = JSON.parse(api_data).fetch("taxis").flat_map { |city, cars| cars.map { |car| Taxi.new(city, car) } }
 
-opts = {
-  verify_peer: true,
-  tls_silence_warnings: true, # silence "Using TLS but no client certificate is provided"
-}
 amqp_url = ENV.fetch("AMQP_URL")
-connection = Bunny.new(amqp_url, opts)
-
-connection.start
+client = AMQP::Client.new(amqp_url)
+client.start
 puts "Connected"
-channel = connection.create_channel
 
-city_exchange = channel.topic("alerts")
-notifications_queue = channel.queue("notifications", durable: true)
+city_exchange = client.topic("alerts2")
 
 taxis.each do |taxi|
   queue_name = "#{taxi.city}_#{taxi.car}"
-  queue = channel.queue(queue_name, durable: true)
+  queue = client.queue(queue_name)
 
-  queue.bind(city_exchange, routing_key: taxi.city)
-  puts "Queue created: #{queue_name}"
+  queue.bind(city_exchange, _binding_key = taxi.city)
+
+  puts "Queue created: #{queue_name} bound to exchange '#{city_exchange.name}'"
 end
 
 puts "Waiting for notifications"
-notifications_queue.subscribe(block: true) do |_delivery_info, _properties, body|
-  puts "Received notification: #{body.inspect}"
-  notification = Notification.new(body)
+client.queue("notifications").subscribe do |msg|
+  puts "Received notification: #{msg.body.inspect}"
+  notification = Notification.new(msg.body)
+  msg.ack
 
   if notification.alert?
-    city_exchange.publish(notification.alert, routing_key: notification.city)
+    city_exchange.publish(notification.alert, _routing_key = notification.city)
     puts "Alert published: #{notification.alert}"
   end
 end
+
+sleep

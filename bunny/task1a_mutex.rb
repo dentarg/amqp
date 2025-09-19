@@ -7,22 +7,26 @@ gemfile do
   gem "json"
 end
 
+Signal.trap("INT") do
+  exit
+end
+
 # 1a) Build your first microservice:
-# Develop a microservice that connects to LavinMQ, subscribes to "<group_name>_booking_requests" messages, extracts
+# Develop a microservice that connects to LavinMQ, subscribes to "booking_requests" messages, extracts
 # the "from" city, computes route distance between the city and the destination, creates a new message with the
-# route distance, and publishes to the "<group_name>_bookings" queue. The distance computation does not need to be
+# route distance, and publishes to the "bookings" queue. The distance computation does not need to be
 # realistic (random is fine!).
 #{ }"vilnius" and "kaunas" are the supported "from" cities.
 #
 # Use the button "Book Taxi" to generate the input message.
 #
-# Input (<group_name>_booking_requests queue):
+# Input (booking_requests queue):
 # {"from": "vilnius", "to": "stockholm", "group_name": "your_group_name"}
-# Output (<group_name>_bookings queue):
+# Output (bookings queue):
 # {"from": "vilnius", "to": "stockholm", "group_name": "your_group_name", "distance": "5000"}
 
 group_name = ARGV.shift || "patrik"
-queue_name = "#{group_name}_booking_requests"
+queue_name = "booking_requests"
 consume_timeout = Integer(ARGV.shift || 15)
 
 opts = {
@@ -58,7 +62,7 @@ messages.each do |message|
   to = booking_request.fetch("to")
   booking = { from:, to:, group_name:, distance: rand(31337) }
 
-  exchange.publish(booking.to_json, key: "#{group_name}_bookings")
+  exchange.publish(booking.to_json, key: "bookings")
 
   puts "Published booking: #{booking}"
 end
