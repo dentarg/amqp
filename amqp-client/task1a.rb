@@ -14,7 +14,7 @@ group_name = ARGV.first || "patrik"
 # the "from" city, computes route distance between the city and the destination, creates a new message with the
 # route distance, and publishes to the "bookings" queue. The distance computation does not need to be
 # realistic (random is fine!).
-#{ }"vilnius" and "kaunas" are the supported "from" cities.
+# { }"vilnius" and "kaunas" are the supported "from" cities.
 #
 # Use the button "Book Taxi" to generate the input message.
 #

@@ -41,7 +41,7 @@ taxis = JSON.parse(api_data).fetch("taxis").flat_map { |city, cars| cars.map { |
 
 opts = {
   verify_peer: true,
-  tls_silence_warnings: true, # silence "Using TLS but no client certificate is provided"
+  tls_silence_warnings: true # silence "Using TLS but no client certificate is provided"
 }
 amqp_url = ENV.fetch("AMQP_URL")
 connection = Bunny.new(amqp_url, opts)
